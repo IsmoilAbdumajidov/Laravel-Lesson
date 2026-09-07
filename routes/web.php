@@ -58,6 +58,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/ideas', [IdeaController::class, 'store']);
     Route::get('/ideas/{idea}', [IdeaController::class, 'show']);
     Route::get('/ideas/{idea}/edit', [IdeaController::class, 'edit']);
+    // Route::get('/ideas/{idea}/edit', [IdeaController::class, 'edit'])->can('update', 'idea');
     Route::patch('/ideas/{idea}', [IdeaController::class, 'update']);
     Route::delete('/ideas/{idea}', [IdeaController::class, 'destroy']);
 
@@ -73,11 +74,13 @@ Route::middleware('guest')->group(function () {
 
 });
 
-Route::get('/admin', function () {
-    Gate ::authorize('view-admin');
+// Route::get('/admin', function () {
+//     Gate ::authorize('view-admin');
 
-    return 'Private Admin Page';
-});
+//     return 'Private Admin Page';
+// });
+
+
 // Route::get('/admin', function () {
 //     return "Private Admin Page";
 // })->can('view-admin');
