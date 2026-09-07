@@ -69,34 +69,62 @@ Tushuntirish:
 ```
 Admin bo'lmasa — link umuman chizilmaydi.
 
-### B) Route'da — `can` middleware
+### B) Route'da — `Gate::authorize()`
 ```php
 Route::get('/admin', function () {
-    return "Private Admin Page";
-})->middleware('can:view-admin');
+    Gate::authorize('view-admin');
+
+    return 'Private Admin Page';
+});
 ```
-Ruxsat yo'q bo'lsa → **403 Forbidden**.
+Ruxsat yo'q bo'lsa — pastdagi kod umuman ishlamaydi, `abort` bo'ladi.
 
-### C) Controllerda
+### C) `can` middleware (bir xil natija, qisqaroq)
 ```php
-Gate::allows('view-admin');   // true/false
-Gate::denies('view-admin');   // teskarisi
+Route::get('/admin', function () {
+    return 'Private Admin Page';
+})->can('view-admin');
+```
+`->can('view-admin')` = `->middleware('can:view-admin')` ning qisqasi.
 
-$this->authorize('view-admin');  // ruxsat yo'q bo'lsa avtomatik 403
+Farqi: `Gate::authorize()` funksiya **ichida**, `->can()` esa route **ustida** turadi.
+Middleware afzalroq — kod ishga tushmasdanoq to'xtaydi.
+
+### D) Controllerda
+```php
+Gate::allows('view-admin');   // true/false qaytaradi
+Gate::denies('view-admin');   // teskarisi
+$this->authorize('view-admin');  // ruxsat yo'q bo'lsa 403
 ```
 
 ---
 
-## ⚠️ Muhim
-Faqat linkni yashirish **yetarli emas**. User to'g'ridan-to'g'ri `/admin` manzilini yozib kirishi mumkin.
-Shuning uchun **route'ni ham** `can:view-admin` middleware bilan yopish shart.
+## Response — javobni boshqarish
 
-Hozirgi loyihada `/admin` route himoyalanmagan — himoyalash kerak:
+`true`/`false` o'rniga `Response` obyektini qaytarsa bo'ladi. Bu **qanday xato chiqishini** boshqaradi:
+
 ```php
-Route::get('/admin', function () {
-    return "Private Admin Page";
-})->middleware(['auth', 'can:view-admin']);
+use Illuminate\Auth\Access\Response;
+
+Gate::define('view-admin', function (User $user) {
+    return $user->isAdmin()
+        ? Response::allow()
+        : Response::denyAsNotFound();
+});
 ```
+
+| Qaytaruv | Natija |
+|---|---|
+| `true` / `Response::allow()` | ruxsat bor |
+| `false` / `Response::deny()` | **403 Forbidden** |
+| `Response::denyAsNotFound()` | **404 Not Found** |
+| `Response::deny('O\'z xabaring')` | 403 + o'z matning |
+
+### Nega `denyAsNotFound()` yaxshiroq?
+**403** deyish = "bu sahifa bor, lekin senga ruxsat yo'q" — ya'ni maxfiy sahifa borligini oshkor qilasan.
+**404** deyish = "bunday sahifa yo'q" — hech qanday ma'lumot bermaysan.
+
+Admin panel kabi yashirin sahifalar uchun `denyAsNotFound()` xavfsizroq.
 
 ---
 
