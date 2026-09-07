@@ -7,6 +7,7 @@ use App\Models\Idea;
 use App\Models\Job;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
 
 // Route::get('/ideas', [IdeaController::class, 'index'])->middleware('auth');
@@ -73,9 +74,13 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::get('/admin', function () {
-    return "Private Admin Page";
-});
+    Gate ::authorize('view-admin');
 
+    return 'Private Admin Page';
+});
+// Route::get('/admin', function () {
+//     return "Private Admin Page";
+// })->can('view-admin');
 
 // Route::get('/ideas', [IdeaController::class, 'index'])->name('ideas.index');
 
