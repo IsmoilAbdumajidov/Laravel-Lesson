@@ -19,6 +19,7 @@ Bu loyihada o'rganilgan mavzular ketma-ketligi.
 | 13 | [Authentication](13-authentication.md) | `Auth::attempt`, `Hash::make`, `auth`/`guest` middleware |
 | 14 | [Authorization — Gate](14-authorization-gate.md) | `Gate::define`, `@can`, `AppServiceProvider` |
 | 15 | [Authorization — Policies](15-authorization-policies.md) | `make:policy`, `Gate::authorize('update', $idea)` |
+| 16 | [Vite — Asset Bundling](16-vite-asset-bundling.md) | `@vite`, `npm run dev/build`, `@source`, `@theme` |
 
 ---
 
